@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <h1 id="vtitle"></h1>
+  <div id="vcontent"></div>
+
+  <script>
+    (async function () {
+    let resp = await fetch("/");
+
+    if (resp.status != 200)
+      console.error('something happened');
+
+      let data = await resp.text();
+
+      data = new window.DOMParser().parseFromString(data, "text/xml");
+
+      let bucketName = data.children[0].getElementsByTagName('Name')[0].innerHTML;
+      document.getElementById('vtitle').innerHTML = bucketName;
+      document.title = bucketName;
+
+      let bucketContents = data.children[0].getElementsByTagName('Contents');
+      let fragment = document.createDocumentFragment();
+
+      for (var i = 0; i < bucketContents.length; ++i) {
+        var objectKey = bucketContents[i].getElementsByTagName("Key")[0].innerHTML;
+
+        var link = document.createElement('a');
+        link.href = objectKey;
+        link.innerHTML = objectKey;
+        link.title = objectKey;
+        fragment.appendChild(link);
+
+        var br = document.createElement('br');
+        fragment.appendChild(br);
+      }
+
+      document.getElementById('vcontent').appendChild(fragment);
+    })();
+  </script>
+</body>
+</html>

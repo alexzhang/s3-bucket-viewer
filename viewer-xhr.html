@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <h1 id="vtitle"></h1>
+  <div id="vcontent"></div>
+
+  <script>
+    const xhr = new XMLHttpRequest();
+
+    function updateStuff() {
+      let bucketName = xhr.responseXML.children[0].getElementsByTagName('Name')[0].innerHTML;
+
+      document.getElementById('vtitle').innerHTML = bucketName;
+      document.title = bucketName;
+
+      let bucketContents = xhr.responseXML.children[0].getElementsByTagName('Contents');
+      let fragment = document.createDocumentFragment();
+
+      for (var i = 0; i < bucketContents.length; ++i) {
+        var objectKey = bucketContents[i].getElementsByTagName("Key")[0].innerHTML;
+
+        var link = document.createElement('a');
+        link.href = objectKey;
+        link.innerHTML = objectKey;
+        link.title = objectKey;
+        fragment.appendChild(link);
+
+        var br = document.createElement('br');
+        fragment.appendChild(br);
+      }
+
+      document.getElementById('vcontent').appendChild(fragment);
+    }
+
+    xhr.onload = function() {
+      updateStuff();
+    }
+
+    xhr.open("GET", "/");
+    xhr.responseType = "document";
+    xhr.send();
+  </script>
+</body>
+</html>
